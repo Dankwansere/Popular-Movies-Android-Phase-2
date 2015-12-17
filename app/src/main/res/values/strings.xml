@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="title_movie_detail">Movie Detail</string>
+
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_movie_detail">MovieDetail</string>
+
+    <string name="detail_poster">Refresh</string>
+    <string name="title_activity_test">testActivity</string>
+
+    <!-- Menu Names -->
+    <string name="menu_most_popular">Popular</string>
+    <string name="menu_highest_rated">Top Rated</string>
+    <string name="menu_highest_grossings">Highest Grossings</string>
+
+    <string name="menu_favourite_lists">Favourites</string>
+    <string name="title_master_list">Items</string>
+    <string name="title_master_detail">master Detail</string>
+</resources>

@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+  <!--  <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" /> -->
+
+    <group android:checkableBehavior="single" >
+
+            <item android:id="@+id/most_popular"
+                android:title="@string/menu_most_popular"
+                android:checked="true"
+                app:showAsAction="never" />
+
+            <item android:id="@+id/highest_rated"
+                android:title="@string/menu_highest_rated"
+                app:showAsAction="never" />
+
+             <item android:id="@+id/highest_grossings"
+                android:title="@string/menu_highest_grossings"
+                app:showAsAction="never" />
+
+            <item android:id="@+id/favourites_list"
+                android:title="@string/menu_favourite_lists"
+                app:showAsAction="never" />
+    </group>
+
+
+
+</menu>
