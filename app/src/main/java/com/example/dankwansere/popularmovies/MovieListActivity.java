@@ -119,19 +119,19 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         if(id == R.id.most_popular) {
             progress.show();
             item.setChecked(true);
-            this.setSortOrder("popularity.desc");
+            setSortOrder("popularity.desc");
             this.retrieveMovieList();
         }
         else if( id == R.id.highest_rated) {
             progress.show();
             item.setChecked(true);
-            this.setSortOrder("vote_count.desc");
+            setSortOrder("vote_count.desc");
             this.retrieveMovieList();
         }
         else if(id == R.id.highest_grossings) {
             progress.show();
             item.setChecked(true);
-            this.setSortOrder("revenue.desc");
+            setSortOrder("revenue.desc");
             this.retrieveMovieList();
 
         }
@@ -161,7 +161,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     public void retrieveMovieList() {
         this.fromDatabaseFlag = false;
         FetchMovieTask fetchMovieTask = new FetchMovieTask();
-        fetchMovieTask.execute(this.getSortOrder());
+        fetchMovieTask.execute(getSortOrder());
     }
 
     @Override
@@ -242,7 +242,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
             }
         }
         else {
-            recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this.movieObject, false, null));
+            recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(movieObject, false, null));
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         }
     }
@@ -341,7 +341,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         String movieJsonStr = null;
         public boolean update = false;
         Uri.Builder urlBuilder = new Uri.Builder();
-        String apikey = "252196683e135d60eaf32a4940cd7162"; //insert API key here
+        String apikey = getString(R.string.ApiKey); //insert API key here
         ArrayList<Movie> retrievedMovieList = new ArrayList<Movie>();
 
         public FetchMovieTask() {

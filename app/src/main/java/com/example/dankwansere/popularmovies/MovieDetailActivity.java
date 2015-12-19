@@ -410,7 +410,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         String trailerJsonStr = null;
         Uri.Builder urlBuilder = new Uri.Builder();
-        String apikey = "252196683e135d60eaf32a4940cd7162"; //insert API key here
+        String apikey = getString(R.string.ApiKey);
         Bitmap bitmap;
         Bitmap backDropBitmap;
 
@@ -427,8 +427,8 @@ public class MovieDetailActivity extends AppCompatActivity {
             movieTrailerUrl = new  String[trailerRetrieved.length];
 
             //If only 1 trailer is available, the trailer 2 and trailer 3 views will be set to invisible
-            View Trailer1 = (LinearLayout)findViewById(R.id.detail_linear_trailer2);
-            View Trailer2 = (LinearLayout)findViewById(R.id.detail_linear_trailer3);
+            View Trailer1 = findViewById(R.id.detail_linear_trailer2);
+            View Trailer2 = findViewById(R.id.detail_linear_trailer3);
 
             switch (movieTrailerUrl.length) {
                 case 1:
@@ -535,7 +535,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         String trailerJsonStr = null;
         Uri.Builder urlBuilder = new Uri.Builder();
-        String apikey = "252196683e135d60eaf32a4940cd7162"; //insert API key here
+        String apikey = getString(R.string.ApiKey); //insert API key here
         TextView sample = (TextView)findViewById(R.id.detail_movie_review);
 
 

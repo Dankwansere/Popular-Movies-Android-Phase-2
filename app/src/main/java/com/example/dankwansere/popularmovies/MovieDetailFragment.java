@@ -65,12 +65,7 @@ public class MovieDetailFragment extends Fragment {
 
             int protrait = Configuration.ORIENTATION_PORTRAIT;
             //If dirty flag is set to true, means device is a tablet and currently in landscape mode
-            if(getActivity().getResources().getConfiguration().orientation == protrait) {
-                this.dirtyFlag = false;
-            }
-            else {
-                this.dirtyFlag = true;
-            }
+        this.dirtyFlag = getActivity().getResources().getConfiguration().orientation != protrait;
     }
 
     @Override
@@ -349,7 +344,7 @@ public class FetchMovieTrailer extends AsyncTask<String, Void, String> {
 
     String trailerJsonStr = null;
     Uri.Builder urlBuilder = new Uri.Builder();
-    String apikey = "252196683e135d60eaf32a4940cd7162"; //insert API key here
+    String apikey = getString(R.string.ApiKey); //insert API key here
     Bitmap bitmap;
     Bitmap backDropBitmap;
 
@@ -367,8 +362,8 @@ public class FetchMovieTrailer extends AsyncTask<String, Void, String> {
         MovieTrailer[] trailerRetrieved = parseTrailerJson(trailerJsonStr);
         movieTrailerUrl = new  String[trailerRetrieved.length];
 
-        View Trailer2 = (LinearLayout)getActivity().findViewById(R.id.detail_linear_trailer2);
-        View Trailer3 = (LinearLayout)getActivity().findViewById(R.id.detail_linear_trailer3);
+        View Trailer2 = getActivity().findViewById(R.id.detail_linear_trailer2);
+        View Trailer3 = getActivity().findViewById(R.id.detail_linear_trailer3);
 
         switch (movieTrailerUrl.length) {
             case 1:
@@ -478,7 +473,7 @@ public class FetchMovieTrailer extends AsyncTask<String, Void, String> {
 
         String trailerJsonStr = null;
         Uri.Builder urlBuilder = new Uri.Builder();
-        String apikey = "252196683e135d60eaf32a4940cd7162"; //insert API key here
+        String apikey = getString(R.string.ApiKey); //insert API key here
         TextView sample = (TextView)getActivity().findViewById(R.id.detail_movie_review);
 
 
