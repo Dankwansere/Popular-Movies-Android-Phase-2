@@ -20,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +52,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private Bitmap mainBackdropBitmap;
     protected String[] movieTrailerUrl; // = "";
-    protected String youtubeBaseUrl = "https://www.youtube.com/watch?v=";
+    protected String youtubeBaseUrl = getString(R.string.Youtube_Url);
     protected String movieReview;
     private ProgressDialog progress;
     private MovieTrailer[] movieTrailers = null;
