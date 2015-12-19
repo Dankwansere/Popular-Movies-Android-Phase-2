@@ -20,4 +20,5 @@
     <string name="menu_favourite_lists">Favourites</string>
     <string name="title_master_list">Items</string>
     <string name="title_master_detail">master Detail</string>
+    <string name="ApiKey"></string> <!-- Insert API Key here -->
 </resources>
