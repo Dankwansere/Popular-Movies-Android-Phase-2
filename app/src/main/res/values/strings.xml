@@ -21,4 +21,5 @@
     <string name="title_master_list">Items</string>
     <string name="title_master_detail">master Detail</string>
     <string name="ApiKey"></string> <!-- Insert API Key here -->
+    <string name="Youtube_Url">https://www.youtube.com/watch?v=</string>
 </resources>
