@@ -43,7 +43,7 @@ public class MovieJsonParser {
         return movieObject;
     }
 
-    //Parsing Movie Traler Json results
+    //Parsing Movie Trailer Json results
     public static MovieTrailer[] parseTrailerJson(String jsonString) {
         MovieTrailer[] movieTrailers = null;
 
