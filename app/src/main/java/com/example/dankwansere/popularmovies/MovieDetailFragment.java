@@ -263,16 +263,6 @@ public class MovieDetailFragment extends Fragment {
         movieListActivity.fetchTrailersAndReviews(id, 2, activity, movieDetail);
         movieReview_textView = (TextView)activity.findViewById(R.id.detail_movie_review);
 
-
-       // FetchMovieCall_ fetchMovieCall = new FetchMovieCall_(this.getActivity());
-       // fetchMovieCall.getMovieTrailers(id, 2);
-       // movieReview_textView = (TextView)activity.findViewById(R.id.detail_movie_review);
-       // fetchMovieCall.getMovieReviews(movieDetail, id, 2);
-
-       // FetchMovieTrailer fetchMovieTrailer = new FetchMovieTrailer();
-        //FetchMovieReview fetchMovieReview = new FetchMovieReview();
-       // fetchMovieTrailer.execute(id);
-       // fetchMovieReview.execute(id);
     }
 
     public void fetchTrailerWide(View view) {
