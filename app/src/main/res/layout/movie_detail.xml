@@ -27,13 +27,10 @@
                 android:layout_marginTop="10dp">
 
 
-
-
             <ImageView
                 android:id="@+id/detail_movie_poster"
                 android:layout_width="180dp"
                 android:layout_height="250dp"
-                android:src="@drawable/movie_poster"
                 android:layout_gravity="left|center_vertical"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
@@ -145,7 +142,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Medium ggggg "
+                android:text="Summary "
                 android:layout_marginLeft="15dp"
                 android:id="@+id/detail_movie_description"
                 android:layout_span="2"
