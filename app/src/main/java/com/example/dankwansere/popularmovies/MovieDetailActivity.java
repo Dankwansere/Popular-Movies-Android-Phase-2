@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -15,7 +14,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,17 +24,7 @@ import android.widget.Toast;
 import com.example.dankwansere.popularmovies.Database.DBHandler;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * An activity representing a single Movie detail screen. This
@@ -46,16 +34,17 @@ import java.net.URL;
  */
 public class MovieDetailActivity extends AppCompatActivity {
 
-    public Movie movieDetail = new Movie();
-    private Bitmap mainbitmap;
+    public static Movie movieDetail = new Movie();
+    private static Bitmap mainbitmap;
     private String movieID;
     private FloatingActionButton fab;
-    private Bitmap mainBackdropBitmap;
-    protected String[] movieTrailerUrl; // = "";
-    protected String youtubeBaseUrl = getString(R.string.Youtube_Url);
-    protected String movieReview;
-    private ProgressDialog progress;
+    private static Bitmap mainBackdropBitmap;
+    protected static String[] movieTrailerUrl;
+    //protected String youtubeBaseUrl = "";//getString(R.string.Youtube_Url);
+    protected static String movieReview;
+    protected static ProgressDialog progress;
     private MovieTrailer[] movieTrailers = null;
+    private static TextView movieReview_textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +105,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         progress.setMessage("Wait while loading...");
         progress.show();
 
-
         this.updateMovieDetailView();
         this.fetchTrailerAndReview(this.movieID);
 
@@ -135,10 +123,11 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     //Description: To call async task to fetch trailer
     private void fetchTrailerAndReview(String id) {
-        FetchMovieTrailer fetchMovieTrailer = new FetchMovieTrailer();
-        FetchMovieReview fetchMovieReview = new FetchMovieReview();
-        fetchMovieTrailer.execute(id);
-        fetchMovieReview.execute(id);
+
+        MovieListActivity movieListActivity = new MovieListActivity();
+        movieListActivity.fetchTrailersAndReviews(id, 1, this, movieDetail);
+        movieReview_textView = (TextView)findViewById(R.id.detail_movie_review);
+        //movieListActivity.getMovieReviews(movieDetail, id, 1);
     }
 
     //Update each view according to the movie object
@@ -168,7 +157,6 @@ public class MovieDetailActivity extends AppCompatActivity {
          * Images in database were stored as blob files. To convert them back to images
          * must convert byte to bitmap and store in image view
          */
-
         if(movieDetail.getPosterPath() == null ) {
             byte[] data = movieDetail.getBytes();
             byte[] backDropData = movieDetail.getBackDropImageBytes();
@@ -237,7 +225,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(context, text, duration);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(movieTrailerUrl[trailerNum]));
+        intent.setData(Uri.parse(this.movieTrailerUrl[trailerNum]));
         if(intent.resolveActivity(this.getPackageManager()) != null) {
 
             toast.show();
@@ -245,6 +233,41 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
         else {
             System.out.println("Could not start intent");
+        }
+    }
+
+    public static void trailerAsyncResults(String[] movieTrailerUrlResult, Bitmap... bitmaps) {
+        movieTrailerUrl = movieTrailerUrlResult;
+        mainbitmap = bitmaps[0];
+        mainBackdropBitmap = bitmaps[1];
+    }
+
+    public static void reviewAsyncResult(String reviewResult){
+        movieReview = reviewResult;
+        try {
+            if(movieDetail.getReview() == null) {
+                if(movieReview.equals("")) {
+                    movieReview_textView.setText("NO REVIEW AVAILABLE AT THE MOMENT");
+                }
+                else {
+                    movieReview_textView.setText(movieReview);
+                }
+
+            }
+            else {
+                if(movieReview.equals("")) {
+                    movieReview_textView.setText("NO REVIEW AVAILABLE AT THE MOMENT");
+                }
+                else {
+                    movieReview_textView.setText(movieDetail.getReview());
+                }
+            }
+        }
+        catch(Exception ex) {
+            System.out.println("Movie Review Error: " + ex.toString());
+        }
+        finally {
+         //    progress.dismiss();
         }
     }
 
@@ -358,286 +381,4 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     }
 
-    //Parse movie trailer Json String
-    protected MovieTrailer[] parseTrailerJson(String jsonString) {
-
-        try {
-            JSONObject rootObject = new JSONObject(jsonString);
-            //Get the instance of JSONArray that contains JSONObjects
-            JSONArray jsonArray = rootObject.optJSONArray("results");
-            movieTrailers = new MovieTrailer[jsonArray.length()];
-
-            for(int i = 0; i < jsonArray.length(); i++) {
-
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                movieTrailers[i] = new MovieTrailer(jsonObject.getString("name"), jsonObject.getString("key"));
-
-            }
-
-        }
-        catch(Exception e) {
-            System.out.println("Parsing Movie trailer json error: " + e.toString());
-        }
-
-        return movieTrailers;
-    }
-
-    //Parse movie review Json String
-    protected String paraseReviewJson(String jsonString){
-
-        String localMovieReview = "";
-
-        try {
-            JSONObject rootObject = new JSONObject(jsonString);
-            //Get the instance of JSONArray that contains JSONObjects
-            JSONArray jsonArray = rootObject.optJSONArray("results");
-
-            // for(int i = 0; i < jsonArray.length(); i++) {
-
-            JSONObject jsonObject = jsonArray.getJSONObject(0);
-            localMovieReview = jsonObject.getString("content");
-            //  }
-
-        }
-        catch(Exception e) {
-            System.out.println("Parsing Movie review json error: " + e.toString());
-        }
-        return localMovieReview;
-    }
-
-    public class FetchMovieTrailer extends AsyncTask<String, Void, String> {
-
-        String trailerJsonStr = null;
-        Uri.Builder urlBuilder = new Uri.Builder();
-        String apikey = getString(R.string.ApiKey);
-        Bitmap bitmap;
-        Bitmap backDropBitmap;
-
-        //Default Constructor
-        public FetchMovieTrailer() {}
-
-        protected void onPostExecute(String strings) {
-
-            mainbitmap = bitmap;
-            mainBackdropBitmap = backDropBitmap;
-
-            //parsing movie trailer json string to MovieTrailer object(s)
-            MovieTrailer[] trailerRetrieved = parseTrailerJson(trailerJsonStr);
-            movieTrailerUrl = new  String[trailerRetrieved.length];
-
-            //If only 1 trailer is available, the trailer 2 and trailer 3 views will be set to invisible
-            View Trailer1 = findViewById(R.id.detail_linear_trailer2);
-            View Trailer2 = findViewById(R.id.detail_linear_trailer3);
-
-            switch (movieTrailerUrl.length) {
-                case 1:
-                    Trailer1.setVisibility(View.INVISIBLE);
-                    Trailer2.setVisibility(View.INVISIBLE);
-                    break;
-
-                case 2:
-                    Trailer2.setVisibility(View.INVISIBLE);
-                    break;
-            }
-
-            try {
-                for(int i = 0; i < trailerRetrieved.length; i++) {
-                    movieTrailerUrl[i] = youtubeBaseUrl + trailerRetrieved[i].getTrailerKey();
-                }
-            }
-            catch (Exception ex) {
-                System.out.println("Error loading trailer url: " + ex.toString());
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-
-            //Converting movie image from url to bitmap, to be capable to store in database
-            try {
-                bitmap = BitmapFactory.decodeStream((InputStream) new URL(movieDetail.getPosterPath()).getContent());
-                backDropBitmap = BitmapFactory.decodeStream((InputStream) new URL(movieDetail.getBackDrop()).getContent());
-            } catch (MalformedURLException e) {
-                System.out.println("Error: " + e.toString());
-            } catch (IOException e) {
-                System.out.println("Error: " + e.toString());
-            }
-
-            // Will contain the raw JSON response as a string.
-
-            try {
-
-
-                urlBuilder.scheme("http")
-                        .authority("api.themoviedb.org")
-                        .appendPath("3")
-                        .appendPath("movie")
-                        .appendPath(params[0])
-                        .appendPath("videos")
-                        .appendQueryParameter("api_key", apikey);
-
-
-                URL url = new URL(urlBuilder.build().toString());
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    //return null;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    //return null;
-                }
-                trailerJsonStr = buffer.toString();
-            } catch (IOException e) {
-                Log.e("MovieFragment", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
-                //return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("MovieFragment", "Error closing stream", e);
-                    }
-                }
-            }
-            return trailerJsonStr;
-        }
-    }
-
-    public class FetchMovieReview extends AsyncTask<String, Void, String> {
-
-        String trailerJsonStr = null;
-        Uri.Builder urlBuilder = new Uri.Builder();
-        String apikey = getString(R.string.ApiKey); //insert API key here
-        TextView sample = (TextView)findViewById(R.id.detail_movie_review);
-
-
-        //Default Constructor
-        public FetchMovieReview() {}
-
-        protected void onPostExecute(String strings) {
-
-            //parsing movie trailer json string to MovieTrailer object(s)
-            String parsedMovieReview = paraseReviewJson(trailerJsonStr);
-            movieReview = parsedMovieReview;
-
-            TextView movieReview_textView = (TextView)findViewById(R.id.detail_movie_review);
-            try {
-                if(movieDetail.getReview() == null) {
-                    if(movieReview.equals("")) {
-                        movieReview_textView.setText("NO REVIEW AVAILABLE AT THE MOMENT");
-                    }
-                    else {
-                        movieReview_textView.setText(movieReview);
-                    }
-
-                }
-                else {
-                    if(movieReview.equals("")) {
-                        movieReview_textView.setText("NO REVIEW AVAILABLE AT THE MOMENT");
-                    }
-                    else {
-                        movieReview_textView.setText(movieDetail.getReview());
-                    }
-                }
-            }
-            catch(Exception ex) {
-                System.out.println("Movie Review Error: " + ex.toString());
-            }
-            finally {
-                progress.dismiss();
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            try {
-                urlBuilder.scheme("http")
-                        .authority("api.themoviedb.org")
-                        .appendPath("3")
-                        .appendPath("movie")
-                        .appendPath(params[0])
-                        .appendPath("reviews")
-                        .appendQueryParameter("api_key", apikey);
-
-
-                URL url = new URL(urlBuilder.build().toString());
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    //return null;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    //return null;
-                }
-                trailerJsonStr = buffer.toString();
-            } catch (IOException e) {
-                Log.e("Movie Review", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
-                //return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("Movie Review", "Error closing stream", e);
-                    }
-                }
-            }
-            return trailerJsonStr;
-        }
-    }
 }
